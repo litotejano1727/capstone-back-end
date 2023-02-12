@@ -90,4 +90,20 @@ router.post("/addproducts", async (req, res) => {
         res.status(400).json({ error: "Failed to add product" });
     }
 });
+router.put("/products/:id", async (req, res) => {
+    try {
+        const { name, price, category, image, description } = req.body;
+        const product = await tables.update(
+            { name, price, category, image, description },
+            { where: { id: req.params.id } }
+        );
+        if (product[0] === 0) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+        res.json({ message: "Product updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: "Failed to update product" });
+    }
+});
 module.exports = { sequelize, tables };
