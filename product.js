@@ -1,9 +1,11 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const express = require("express");
 const login = require("./login");
+const router = express.Router();
 const app = express();
 
 app.use("/auth", login);
+app.use(express.json());
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -71,5 +73,21 @@ app.get("/", (req, res) => {
 app.listen(9000, () => {
     console.log("Server is running on port 9000");
 });
-
+app.use("/", router);
+router.post("/addproducts", async (req, res) => {
+    try {
+        const { name, price, category, image, description } = req.body;
+        const product = await tables.create({
+            name,
+            price,
+            category,
+            image,
+            description,
+        });
+        res.status(201).json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: "Failed to add product" });
+    }
+});
 module.exports = { sequelize, tables };
