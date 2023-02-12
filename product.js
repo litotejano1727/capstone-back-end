@@ -57,7 +57,7 @@ const tables = sequelize.define(
 );
 
 sequelize
-    .sync({ force: true }) // This line will drop and re-create the table
+    .sync({ force: false }) // This line will drop and re-create the table
     .then(() => {
         console.log("Table created successfully!");
     })
@@ -90,20 +90,19 @@ router.post("/addproducts", async (req, res) => {
         res.status(400).json({ error: "Failed to add product" });
     }
 });
-router.put("/products/:id", async (req, res) => {
+router.put("/editproducts/:id", async (req, res) => {
     try {
-        const { name, price, category, image, description } = req.body;
-        const product = await tables.update(
-            { name, price, category, image, description },
-            { where: { id: req.params.id } }
-        );
-        if (product[0] === 0) {
+        const product = await tables.findByPk(req.params.id);
+        if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
+        const { name, price, category, image, description } = req.body;
+        await product.update({ name, price, category, image, description });
         res.json({ message: "Product updated successfully" });
     } catch (error) {
         console.error(error);
         res.status(400).json({ error: "Failed to update product" });
     }
 });
+
 module.exports = { sequelize, tables };
