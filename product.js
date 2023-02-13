@@ -54,7 +54,7 @@ const tables = sequelize.define(
             type: DataTypes.STRING,
         },
         description: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT("long"),
         },
     },
     {
@@ -82,12 +82,15 @@ app.listen(9000, () => {
 app.use("/", router);
 router.post("/addproducts", async (req, res) => {
     try {
-        const { name, price, category, image, description } = req.body;
+        const { name, price, category, image, image2, image3, description } =
+            req.body;
         const product = await tables.create({
             name,
             price,
             category,
             image,
+            image2,
+            image3,
             description,
         });
         res.status(201).json(product);
