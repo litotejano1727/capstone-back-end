@@ -105,7 +105,8 @@ router.put("/editproducts/:id", async (req, res) => {
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-        const { name, price, category, image, description } = req.body;
+        const { name, price, category, image, image2, image3, description } =
+            req.body;
         await product.update({ name, price, category, image, description });
         res.json({ message: "Product updated successfully" });
     } catch (error) {
