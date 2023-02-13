@@ -47,6 +47,12 @@ const tables = sequelize.define(
         image: {
             type: DataTypes.STRING,
         },
+        image2: {
+            type: DataTypes.STRING,
+        },
+        image3: {
+            type: DataTypes.STRING,
+        },
         description: {
             type: DataTypes.STRING,
         },
