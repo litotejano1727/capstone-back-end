@@ -56,6 +56,12 @@ const tables = sequelize.define(
         description: {
             type: DataTypes.TEXT("long"),
         },
+        stocks: {
+            type: DataTypes.INTEGER,
+        },
+        discount: {
+            type: DataTypes.INTEGER,
+        },
     },
     {
         timestamps: true,
@@ -82,8 +88,17 @@ app.listen(9000, () => {
 app.use("/", router);
 router.post("/addproducts", async (req, res) => {
     try {
-        const { name, price, category, image, image2, image3, description } =
-            req.body;
+        const {
+            name,
+            price,
+            category,
+            image,
+            image2,
+            image3,
+            description,
+            stocks,
+            discount,
+        } = req.body;
         const product = await tables.create({
             name,
             price,
@@ -92,6 +107,8 @@ router.post("/addproducts", async (req, res) => {
             image2,
             image3,
             description,
+            stocks,
+            discount,
         });
         res.status(201).json(product);
     } catch (error) {
@@ -99,19 +116,60 @@ router.post("/addproducts", async (req, res) => {
         res.status(400).json({ error: "Failed to add product" });
     }
 });
-router.put("/editproducts/:id", async (req, res) => {
+router.put(`/editproduct/:id`, async (req, res) => {
     try {
         const product = await tables.findByPk(req.params.id);
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-        const { name, price, category, image, image2, image3, description } =
-            req.body;
-        await product.update({ name, price, category, image, description });
+        const {
+            name,
+            price,
+            category,
+            image,
+            image2,
+            image3,
+            description,
+            stocks,
+            discount,
+        } = req.body;
+        await product.update({
+            name,
+            price,
+            category,
+            image,
+            image2,
+            image3,
+            description,
+            stocks,
+            discount,
+        });
         res.json({ message: "Product updated successfully" });
     } catch (error) {
         console.error(error);
         res.status(400).json({ error: "Failed to update product" });
+    }
+});
+app.get("/latest", (req, res) => {
+    tables
+        .findAll({
+            order: [["createdAt", "DESC"]],
+            limit: 6,
+        })
+        .then((data) => res.json(data))
+        .catch((err) => res.status(400).json("Error: " + err));
+});
+app.get("/laptop", async (req, res) => {
+    try {
+        const latestLaptops = await tables.findAll({
+            where: { category: "laptop" },
+            order: [["createdAt", "DESC"]],
+            limit: 9,
+        });
+        res.json(latestLaptops);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
     }
 });
 
