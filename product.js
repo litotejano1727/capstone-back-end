@@ -172,5 +172,24 @@ app.get("/laptop", async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+// app.get("/flash", (req, res) => {
+//     tables
+//         .findAll({
+//             where: {
+//                 discount: {
+//                     [Op.gt]: 0,
+//                 },
+//             },
+//             order: [["discount", "DESC"]],
+//             limit: 12,
+//         })
+//         .then((products) => {
+//             res.json(products);
+//         })
+//         .catch((err) => {
+//             console.log(err);
+//             res.status(500).send(err);
+//         });
+// });
 
 module.exports = { sequelize, tables };
