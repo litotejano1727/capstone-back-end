@@ -117,6 +117,15 @@ router.post("/addproducts", async (req, res) => {
         res.status(400).json({ error: "Failed to add product" });
     }
 });
+app.get("/latest", (req, res) => {
+    tables
+        .findAll({
+            order: [["createdAt", "DESC"]],
+            limit: 6,
+        })
+        .then((data) => res.json(data))
+        .catch((err) => res.status(400).json("Error: " + err));
+});
 
 app.get("/laptop", async (req, res) => {
     try {
@@ -131,7 +140,23 @@ app.get("/laptop", async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
-router.put("/admin/product/id/", async (req, res) => {
+router.get("/admin/product/:id/", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const product = await tables.findByPk(req.params.id);
+
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        res.json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+router.put("/admin/product/:id", async (req, res) => {
     try {
         const product = await tables.findByPk(req.params.id);
         if (!product) {
