@@ -3,10 +3,11 @@ const express = require("express");
 const login = require("./login");
 const router = express.Router();
 const app = express();
+const cors = require("cors");
 
 app.use("/auth", login);
 app.use(express.json());
-
+app.use(cors());
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
@@ -116,7 +117,21 @@ router.post("/addproducts", async (req, res) => {
         res.status(400).json({ error: "Failed to add product" });
     }
 });
-router.put(`/editproduct/:id`, async (req, res) => {
+
+app.get("/laptop", async (req, res) => {
+    try {
+        const latestLaptops = await tables.findAll({
+            where: { category: "laptop" },
+            order: [["createdAt", "DESC"]],
+            limit: 9,
+        });
+        res.json(latestLaptops);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+router.put("/admin/product/id/", async (req, res) => {
     try {
         const product = await tables.findByPk(req.params.id);
         if (!product) {
@@ -148,28 +163,6 @@ router.put(`/editproduct/:id`, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(400).json({ error: "Failed to update product" });
-    }
-});
-app.get("/latest", (req, res) => {
-    tables
-        .findAll({
-            order: [["createdAt", "DESC"]],
-            limit: 6,
-        })
-        .then((data) => res.json(data))
-        .catch((err) => res.status(400).json("Error: " + err));
-});
-app.get("/laptop", async (req, res) => {
-    try {
-        const latestLaptops = await tables.findAll({
-            where: { category: "laptop" },
-            order: [["createdAt", "DESC"]],
-            limit: 9,
-        });
-        res.json(latestLaptops);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
     }
 });
 // app.get("/flash", (req, res) => {
