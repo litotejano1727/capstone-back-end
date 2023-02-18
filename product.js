@@ -132,7 +132,7 @@ app.get("/laptop", async (req, res) => {
         const latestLaptops = await tables.findAll({
             where: { category: "laptop" },
             order: [["createdAt", "DESC"]],
-            limit: 9,
+            limit: 12,
         });
         res.json(latestLaptops);
     } catch (error) {
@@ -156,6 +156,20 @@ router.get("/admin/product/:id/", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+app.get("/details/:id", async (req, res) => {
+    try {
+        const product = await tables.findByPk(req.params.id);
+        if (product) {
+            res.send(product);
+        } else {
+            res.status(404).send("Product not found");
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server Error");
+    }
+});
+
 router.put("/admin/product/:id", async (req, res) => {
     try {
         const product = await tables.findByPk(req.params.id);
